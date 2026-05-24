@@ -14,6 +14,7 @@ Input:
 Processes:
 - list_shuffle(the_dictionary) (Shuffle flashcards)
 - ask_questions(the_dictionary) (Ask questions and receive user input)
+- retake_or_review() (Option to retake quiz or review questions)
 
 Outputs:
 - Number of correct answers
@@ -39,15 +40,47 @@ def ask_questions(questions_answers):
             print(f"Incorrect! The correct answer is: {answer}")
         print(f"Current Score: {score}/{total_questions}\n")
     return score, total_questions
+def retake_or_review():
+    while True:
+        choice = input("Would you like to retake the quiz or review the questions? (retake/review/exit): ").strip().lower()
+        if choice == "retake":
+            main()
+            break
+        elif choice == "review":
+            print("\nReviewing Questions and Answers:")
+            for question, answer in questions_answers.items():
+                print(f"{question} : {answer}")
+            continue_choice = input("\nWould you like to retake the quiz now? (yes/no): ").strip().lower()
+            if continue_choice == "yes":
+                main()
+                break
+            else: 
+                print("Thank you for using the Flashcard Quiz!")
+            break
+        elif choice == "exit":
+            print("Thank you for using the Flashcard Quiz!")
+            break
+        else:
+            print("Invalid choice. Please enter 'retake', 'review', or 'exit'.")
 def main():
-    num_flashcards = int(input("Enter the number of flashcards: "))
-    for _ in range(num_flashcards):
-        question = input("Enter the question: ")
-        answer = input("Enter the answer: ")
-        questions_answers[question] = answer
+    if not questions_answers:
+        while True:
+            try:
+                num_flashcards = int(input("Enter the number of flashcards: "))
+                if num_flashcards <= 0:
+                    print("Please enter a positive integer.")
+                    continue
+                break
+            except ValueError or TypeError:
+                print("Invalid input. Please enter a valid integer.")
+        for _ in range(num_flashcards):
+            question = input("Enter the question: ")
+            answer = input("Enter the answer: ")
+            questions_answers[question] = answer
     print("\n" * 50)  # Clear the screen
     shuffled_flashcards = list_shuffle(questions_answers)
     score, total_questions = ask_questions(shuffled_flashcards)
     percentage = (score / total_questions) * 100
     print(f"Final Score: {score}/{total_questions} ({percentage:.2f}%)")
+    retake_or_review()
 main()
